@@ -1,0 +1,6 @@
+{
+  "name": "Gestor MEI Pro v4.0",
+  "description": "Sistema completo de gestão para MEI com controle financeiro, estoque, clientes, calendário fiscal e IA consultiva.",
+  "version": "4.0.0",
+  "requestFramePermissions": []
+}
