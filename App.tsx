@@ -6,18 +6,18 @@ import {
   Crown, ArrowLeftRight, Smartphone, Key, Lock, LogOut, Menu, Eye, EyeOff, ShieldAlert,
   FileBadge
 } from 'lucide-react';
-import { db } from './services/db';
-import { Transaction, Client, Product, Goal, Config, DASPayment } from './types';
-import Dashboard from './components/Dashboard';
-import TransactionsList from './components/TransactionsList';
-import ClientsList from './components/ClientsList';
-import ProductsList from './components/ProductsList';
-import GoalsManager from './components/GoalsManager';
-import ConfigPanel from './components/ConfigPanel';
-import Reports from './components/Reports';
-import CashFlow from './components/CashFlow';
-import ReceiptGenerator from './components/ReceiptGenerator';
-import { getSmartInsights } from './services/gemini';
+import { db } from './services/db.ts';
+import { Transaction, Client, Product, Goal, Config, DASPayment } from './types.ts';
+import Dashboard from './components/Dashboard.tsx';
+import TransactionsList from './components/TransactionsList.tsx';
+import ClientsList from './components/ClientsList.tsx';
+import ProductsList from './components/ProductsList.tsx';
+import GoalsManager from './components/GoalsManager.tsx';
+import ConfigPanel from './components/ConfigPanel.tsx';
+import Reports from './components/Reports.tsx';
+import CashFlow from './components/CashFlow.tsx';
+import ReceiptGenerator from './components/ReceiptGenerator.tsx';
+import { getSmartInsights } from './services/gemini.ts';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -60,7 +60,8 @@ const App: React.FC = () => {
 
   const handleUnlock = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (config?.security?.pinHash === pinInput || !config?.security?.pinHash) {
+    const currentConfig = await db.getConfig();
+    if (currentConfig.security?.pinHash === pinInput || !currentConfig.security?.pinHash) {
       const success = await db.unlock(pinInput || 'default_key');
       if (success) {
         setIsLocked(false);

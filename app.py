@@ -1,33 +1,41 @@
 
-from flask import Flask, send_from_directory
-import webbrowser
-from threading import Timer
+from flask import Flask, send_from_directory, Response
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.')
 
-# Rota para servir o arquivo principal
+# Mapeamento de tipos MIME para garantir que o navegador entenda os arquivos
+MIME_TYPES = {
+    '.tsx': 'application/javascript',
+    '.ts': 'application/javascript',
+    '.js': 'application/javascript',
+    '.json': 'application/json',
+    '.css': 'text/css',
+    '.html': 'text/html',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.svg': 'image/svg+xml'
+}
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
 
-# Rota para servir arquivos estáticos (JS, JSON, manifest, etc)
 @app.route('/<path:path>')
 def static_files(path):
-    return send_from_directory('.', path)
-
-def open_browser():
-    webbrowser.open_new("http://127.0.0.1:5000")
+    # Obtém a extensão do arquivo
+    _, ext = os.path.splitext(path)
+    
+    # Busca o arquivo no diretório atual
+    try:
+        response = send_from_directory('.', path)
+        # Força o tipo MIME se estiver no nosso mapeamento
+        if ext in MIME_TYPES:
+            response.headers['Content-Type'] = MIME_TYPES[ext]
+        return response
+    except:
+        # Se o arquivo não existir, retorna o index.html (comportamento SPA)
+        return send_from_directory('.', 'index.html')
 
 if __name__ == '__main__':
-    print("========================================")
-    print("      GESTOR MEI PRO v4.0 - SISTEMA     ")
-    print("========================================")
-    print("Iniciando servidor local Python...")
-    print("Acesso: http://127.0.0.1:5000")
-    
-    # Abre o navegador automaticamente após 1.5 segundos
-    Timer(1.5, open_browser).start()
-    
-    # Roda o Flask
-    app.run(host='127.0.0.1', port=5000, debug=False)
+    app.run(host='127.0.0.1', port=5000, debug=True)
